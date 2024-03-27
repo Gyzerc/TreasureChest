@@ -1,0 +1,5 @@
+chests:
+  c1:
+    display: '&f[ &6普通物资箱 &f]'
+    cooldown: 10
+    percent: 0.5

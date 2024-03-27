@@ -1,0 +1,7 @@
+name: TreasureChest
+main: com.gyzer.TreasureChest
+version: 1.0.1
+depend:
+  - ProtocolLib
+commands:
+  TreasureChest:
