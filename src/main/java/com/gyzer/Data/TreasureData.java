@@ -1,5 +1,6 @@
 package com.gyzer.Data;
 
+import com.gyzer.TreasureChest;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 
@@ -50,6 +51,10 @@ public class TreasureData {
     }
 
     public void refresh() {
+        TreasureChest.getTreasureChest().getCachesManager().random(this);
+    }
 
+    public void update() {
+        TreasureChest.getTreasureChest().getCachesManager().update(this);
     }
 }

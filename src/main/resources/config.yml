@@ -1,0 +1,8 @@
+lang:
+  plugin: '&f[&6&lTreasure&e&lChest&f] '
+  claim: '&b你打开了该物资箱, 该物资箱进入冷却等待刷新中....'
+  hologram:
+    head: '&f[ &e%name% &f]'
+    bottom:
+      cooldown: '7&l→ &7距离刷新 &a%minutes%分%seconds%秒'
+      claim: 'd7&l→ &a已刷新'

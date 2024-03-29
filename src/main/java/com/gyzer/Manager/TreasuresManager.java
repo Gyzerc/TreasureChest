@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public class TreasuresManager {
     private HashMap<String, Treasure> caches;
@@ -36,9 +37,9 @@ public class TreasuresManager {
         ConfigurationSection section = yml.getConfigurationSection("chests");
         if (section != null) {
             for (String id : section.getKeys(false)) {
-                String display = MsgUtils.msg(yml.getString(id+".display"));
-                int cooldown = yml.getInt(id+".cooldown",10);
-                double percent = yml.getDouble(id+".percent",0.5);
+                String display = MsgUtils.msg(section.getString(id+".display","物资箱"));
+                int cooldown = section.getInt(id+".cooldown",10);
+                double percent = section.getDouble(id+".percent",0.5);
                 List<ItemStack> items = new ArrayList<>();
                 ConfigurationSection itemSection = section.getConfigurationSection(id+".items");
                 if (itemSection != null) {
@@ -57,6 +58,7 @@ public class TreasuresManager {
         long time = System.currentTimeMillis();
         caches.put(treasure.getId(),treasure);
         String id = treasure.getId();
+
         yml.set("chests."+id+".cooldown",treasure.getCooldown());
         yml.set("chests."+id+".percent",treasure.getPercent());
         yml.set("chests."+id+".items",null);
@@ -73,5 +75,9 @@ public class TreasuresManager {
             throw new RuntimeException(e);
         }
         treasureChest.info("成功保持物资箱 "+id+" 耗时 "+(System.currentTimeMillis()- time)+"ms",Level.INFO);
+    }
+
+    public List<String> getTreasures() {
+        return new ArrayList<>(caches.keySet());
     }
 }

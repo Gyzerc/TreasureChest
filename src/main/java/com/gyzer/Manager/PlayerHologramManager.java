@@ -1,4 +1,4 @@
-﻿package com.gyzer.Manager;
+package com.gyzer.Manager;
 
 import com.gyzer.Data.TreasureData;
 import com.gyzer.TreasureChest;
@@ -8,6 +8,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -23,7 +24,13 @@ public class PlayerHologramManager {
     }
 
     public PlayerHologram getPlayerHologram(Player p){
-        return caches.getOrDefault(p,new PlayerHologram(new HashMap<>()));
+        PlayerHologram playerHologram = caches.get(p);
+        if (playerHologram != null) {
+            return playerHologram;
+        }
+        playerHologram = new PlayerHologram(new HashMap<>());
+        caches.put(p,playerHologram);
+        return playerHologram;
     }
 
     public class PlayerHologram {
@@ -34,9 +41,22 @@ public class PlayerHologramManager {
             this.holograms = holograms;
         }
 
+        public HashMap<UUID, Hologram> getHolograms() {
+            return holograms;
+        }
+
+        public void setHolograms(HashMap<UUID, Hologram> holograms) {
+            this.holograms = holograms;
+        }
+
         public void update(Player p, TreasureData data, String str1, String str2) {
+            PlayerHologram playerHologram = getPlayerHologram(p);
+
+
+
             UUID uuid = data.getUuid();
-            Hologram hologram = holograms.get(uuid);
+            Hologram hologram = playerHologram.getHolograms().get(uuid);
+
             if (hologram != null) {
                 protocoLibManager.sendPacket(p,
                         HologramUtils.armorStand(hologram.getId1(),str1),
@@ -49,10 +69,14 @@ public class PlayerHologramManager {
 
 
                 Location loc = data.getLocation();
-                Location loc1 = loc.clone().add(0,1.5,0);
-                Location loc2 = loc.clone().add(0,1,0);
+                Location loc1 = loc.clone().add(0.5,-0.8,0.5);
+                Location loc2 = loc.clone().add(0.5,-1.1,0.5);;
 
-                holograms.put(uuid,hologram);
+                HashMap<UUID,Hologram> hologramHashMap = playerHologram.getHolograms();
+                hologramHashMap.put(uuid,hologram);
+                playerHologram.setHolograms(hologramHashMap);
+                caches.put(p,playerHologram);
+
                 protocoLibManager.sendPacket(p,
                         HologramUtils.spawn(id1,loc1, EntityType.ARMOR_STAND),
                         HologramUtils.spawn(id2,loc2, EntityType.ARMOR_STAND),
@@ -61,13 +85,27 @@ public class PlayerHologramManager {
             }
         }
 
-        public void remove(Player p,UUID uuid) {
-            Hologram hologram = holograms.get(uuid);
+        public void removeHolo(Player p,UUID uuid) {
+            PlayerHologram playerHologram = getPlayerHologram(p);
+            HashMap<UUID,Hologram> hologramHashMap = playerHologram.getHolograms();
+            Hologram hologram = hologramHashMap.get(uuid);
+            playerHologram.setHolograms(holograms);
+            caches.put(p,playerHologram);
+
             if (hologram != null) {
                 protocoLibManager.sendPacket(p,
                         HologramUtils.destory(hologram.getId1()),
                         HologramUtils.destory(hologram.getId2()));
             }
+
+        }
+
+        public void removeUIDS(Player p,List<UUID> uids) {
+            PlayerHologram playerHologram = getPlayerHologram(p);
+            HashMap<UUID,Hologram> hologramHashMap = playerHologram.getHolograms();
+            uids.forEach(hologramHashMap::remove);
+            playerHologram.setHolograms(hologramHashMap);
+            caches.put(p,playerHologram);
         }
     }
     public class Hologram {

@@ -1,4 +1,4 @@
-﻿package com.gyzer.Utils;
+package com.gyzer.Utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,7 +20,10 @@ public class MsgUtils {
     }
     public static String msg(String msg)
     {
-        return tm(msg);
+        if (msg != null) {
+            return tm(msg);
+        }
+        return "";
     }
     public static List<String> msg(List<String> msg)
     {

@@ -1,20 +1,10 @@
 package com.gyzer;
 
-import com.gyzer.Manager.CachesManager;
-import com.gyzer.Manager.PlayerHologramManager;
-import com.gyzer.Manager.ProtocoLibManager;
-import com.gyzer.Manager.TreasuresManager;
-import com.gyzer.Utils.HologramUtils;
-import org.bukkit.Location;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
+import com.gyzer.Command.Commands;
+import com.gyzer.Manager.*;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 
 public class TreasureChest extends JavaPlugin {
@@ -24,22 +14,35 @@ public class TreasureChest extends JavaPlugin {
     private CachesManager cachesManager;
     private ProtocoLibManager protocoLibManager;
     private PlayerHologramManager playerHologramManager;
+    private EditorManager editorManager;
+    private ConfigManager configManager;
 
     @Override
     public void onEnable() {
         treasureChest = this;
+        configManager = new ConfigManager();
         treasuresManager = new TreasuresManager();
         cachesManager = new CachesManager();
         protocoLibManager = new ProtocoLibManager();
         playerHologramManager = new PlayerHologramManager();
+        editorManager = new EditorManager();
+
+        Bukkit.getPluginManager().registerEvents(new EventListeners(),this);
+        Bukkit.getPluginCommand("TreasureChest").setExecutor(new Commands());
+        Bukkit.getPluginCommand("TreasureChest").setTabCompleter(new Commands());
+        Commands.register();
     }
     @Override
     public void onDisable() {
         cachesManager.onDisable();
     }
 
-    private int random = -1;
-    @Override
+    public void reload() {
+        configManager = new ConfigManager();
+        treasuresManager = new TreasuresManager();
+    }
+
+   /* @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         Player player = (Player) sender;
 
@@ -60,7 +63,7 @@ public class TreasureChest extends JavaPlugin {
             );
         }
         return true;
-    }
+    }*/
 
     public static TreasureChest getTreasureChest() {
         return treasureChest;
@@ -80,6 +83,14 @@ public class TreasureChest extends JavaPlugin {
 
     public PlayerHologramManager getPlayerHologramManager() {
         return playerHologramManager;
+    }
+
+    public EditorManager getEditorManager() {
+        return editorManager;
+    }
+
+    public ConfigManager getConfigManager() {
+        return configManager;
     }
 
     public void info(String str, Level level) {
